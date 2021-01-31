@@ -49,7 +49,7 @@ tanh(l, x) = l * ma.tanh(x / l);
 // a one-pole low-pass with a 20-Hz cut-off frequency.
 smooth(x) = fi.pole(pole, x * (1.0 - pole))
     with {
-        pole = exp(-2 * ma.PI * 20 / ma.SR);
+        pole = exp(-2.0 * ma.PI * 20.0 / ma.SR);
     };
 
 // GUI parameters
