@@ -39,8 +39,9 @@ declare license "GPL v3.0 license";
 // Discrete model:
 //      x[n] = x[n - 1] + dt(ax[n - 1] - bx[n - 1]y[n - 1])
 //      y[n] = y[n - 1] + dt(gx[n - 1]y[n - 1] - cy[n - 1])
-lotkavolterra(L, a, b, c, g, dt, x_0, y_0) =    prey_level(out * (x / (L * 2.0))) , 
-                                                pred_level(out * (y / (L * 2.0)))
+lotkavolterra(L, a, b, c, g, dt, x_0, y_0) =    
+    prey_level(out * (x / (L * 2.0))) , 
+    pred_level(out * (y / (L * 2.0)))
     letrec {
         'x = fi.highpass(1, 10, tanh(L, (x_0 + x + dt * (a * x - b * x * y))));
         'y = fi.highpass(1, 10, tanh(L, (y_0 + y + dt * (g * x * y - c * y))));
