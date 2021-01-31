@@ -35,12 +35,6 @@ declare license "GPL v3.0 license";
 // Discrete model:
 //      x[n] = x[n - 1] + dt(ax[n - 1] - bx[n - 1]y[n - 1])
 //      y[n] = y[n - 1] + dt(gx[n - 1]y[n - 1] - cy[n - 1])
-lotkavolterra(L, a, b, d, y, dt, z1_0, z2_0) =  prey_level(out * (z1 / (L * 2))) , 
-                                                pred_level(out * (z2 / (L * 2)))
-    letrec {
-        'z1 = fi.highpass(1, 10, tanh(L, (z1_0 + z1 + dt * (a * z1 - b * z1 * z2))));
-        'z2 = fi.highpass(1, 10, tanh(L, (z2_0 + z2 + dt * (d * z1 * z2 - y * z2))));
-    };
 lotkavolterra(L, a, b, c, g, dt, x_0, y_0) =    prey_level(out * (x / (L * 2))) , 
                                                 pred_level(out * (y / (L * 2)))
     letrec {
@@ -83,5 +77,5 @@ limit = global_group(
 out = global_group(hslider("[6]Output scaling[scale:exp]", 0, 0, 1, .000001) : 
     smooth);
 
-process(x1, x2) = lotkavolterra(limit, a, b, d, y, dt, input(x1), input(x2));
+process(x1, x2) = lotkavolterra(limit, a, b, c, g, dt, input(x1), input(x2));
 
