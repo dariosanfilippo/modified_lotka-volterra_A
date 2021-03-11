@@ -1,5 +1,5 @@
 // =============================================================================
-//      Lotka-Volterra complex oscillator (A)
+//      Modified Lotka-Volterra complex generator (A)
 // ============================================================================= 
 //
 //  This is a complex double oscillator based on the Lotka-Volterra equations.
@@ -25,11 +25,11 @@
 
 import("stdfaust.lib");
 
-declare name "modified Lotka-Volterra complex generator (A)";
+declare name "Modified Lotka-Volterra complex generator (A)";
 declare author "Dario Sanfilippo";
 declare copyright "Copyright (C) 2021 Dario Sanfilippo 
     <sanfilippo.dario@gmail.com>";
-declare version "1.0";
+declare version "1.1";
 declare license "GPL v3.0 license";
 
 // Lotka-Volterra differential equations:
