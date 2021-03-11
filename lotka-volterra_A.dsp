@@ -25,7 +25,7 @@
 
 import("stdfaust.lib");
 
-declare name "Lotka-Volterra complex oscillator (A)";
+declare name "modified Lotka-Volterra complex generator (A)";
 declare author "Dario Sanfilippo";
 declare copyright "Copyright (C) 2021 Dario Sanfilippo 
     <sanfilippo.dario@gmail.com>";
@@ -40,8 +40,8 @@ declare license "GPL v3.0 license";
 //      x[n] = x[n - 1] + dt(ax[n - 1] - bx[n - 1]y[n - 1])
 //      y[n] = y[n - 1] + dt(gx[n - 1]y[n - 1] - cy[n - 1])
 lotkavolterra(L, a, b, c, g, dt, x_0, y_0) =    
-    prey_level(out * (x / (L * 2.0))) , 
-    pred_level(out * (y / (L * 2.0)))
+    prey_level(out * (x / L)) , 
+    pred_level(out * (y / L))
     letrec {
         'x = fi.highpass(1, 10, tanh(L, (x_0 + x + dt * (a * x - b * x * y))));
         'y = fi.highpass(1, 10, tanh(L, (y_0 + y + dt * (g * x * y - c * y))));
@@ -66,21 +66,25 @@ prey_group(x) = vgroup("[1]Prey", x);
 pred_group(x) = vgroup("[2]Predator", x);
 global_group(x) = vgroup("[3]Global", x);
 levels_group(x) = hgroup("[4]Levels (dB)", x);
-a = prey_group(hslider("Growth rate", 4, -10, 10, .000001) : smooth);
-b = prey_group(hslider("Interaction parameter", 1, -10, 10, .000001) : smooth);
-c = pred_group(hslider("Extinction rate", 2, -10, 10, .000001) : smooth);                
-g = pred_group(hslider("Interaction parameter", 1, -10, 10, .000001) : smooth);
+a = prey_group(hslider("Growth rate[scale:exp]", 4, 0, 10, .000001) 
+    : smooth);
+b = prey_group(hslider("Interaction parameter[scale:exp]", 1, 0, 10, .000001) 
+    : smooth);
+c = pred_group(hslider("Extinction rate[scale:exp]", 2, 0, 10, .000001) 
+    : smooth);                
+g = pred_group(hslider("Interaction parameter[scale:exp]", 1, 0, 10, .000001) 
+    : smooth);
 dt = global_group(
-    hslider("[4]dt (time delta)[scale:exp]", 0.1, 0.000001, 10, .000001) : 
-        smooth);
-input(x) = global_group(nentry("[3]Input value", 1, 0, 10, .000001) <: 
-    _ * impulse + _ * checkbox("[1]Constant inputs") + 
-        x * checkbox("[0]External inputs"));
+    hslider("[4]dt (integration step)[scale:exp]", 0.1, .000001, 1, .000001) 
+        : smooth);
+input(x) = global_group(nentry("[3]Input value", 1, 0, 10, .000001) 
+    <: _ * impulse + _ * checkbox("[1]Constant inputs") 
+        + x * checkbox("[0]External inputs"));
 impulse = checkbox("[2]Impulse inputs") <: _ - _' : abs;
 limit = global_group(
     hslider("[5]Saturation limit[scale:exp]", 4, 1, 1024, .000001) : smooth);
-out = global_group(hslider("[6]Output scaling[scale:exp]", 0, 0, 1, .000001) : 
-    smooth);
+out = global_group(hslider("[6]Output scaling[scale:exp]", 0, 0, 1, .000001) 
+    : smooth);
 
 process(x1, x2) = lotkavolterra(limit, a, b, c, g, dt, input(x1), input(x2));
 
