@@ -2,13 +2,13 @@
 //      Modified Lotka-Volterra complex generator (A)
 // ============================================================================= 
 //
-//  This is a complex double oscillator based on the Lotka-Volterra equations.
+//  Complex sound generator based on modified Lotka-Volterra equations.
 //  The model is structurally-stable through hyperbolic tangent function
 //  saturators and allows for parameters in unstable ranges to explore 
 //  different dynamics. Furthermore, this model includes DC-blockers in the 
 //  feedback paths to counterbalance a tendency towards fixed-point attractors 
 //  – thus enhancing complex behaviours – and obtain signals suitable for audio.
-//  Besides the common parameters in an L-V model, this system includes a
+//  Besides the original parameters in the model, this system includes a
 //  saturating threshold determining the positive and negative bounds in the
 //  equations, while the output peaks are within the [-1.0; 1.0] range.
 //
@@ -16,10 +16,6 @@
 //  values for deterministic and reproducable behaviours. Alternatively,
 //  the oscillator can be fed with external inputs to be used as a nonlinear
 //  distortion unit.
-//
-//  References:
-//      https://www.worldscientific.com/doi/pdf/10.1142/S2010194512005405
-//      https://en.wikipedia.org/wiki/Lotka%E2%80%93Volterra_equations
 //
 // =============================================================================
 
@@ -32,16 +28,8 @@ declare copyright "Copyright (C) 2021 Dario Sanfilippo
 declare version "1.1";
 declare license "GPL v3.0 license";
 
-// Lotka-Volterra differential equations:
-//      dx/dt = ax - bxy
-//      dy/dt = cxy - gy
-//
-// Discrete model:
-//      x[n] = x[n - 1] + dt(ax[n - 1] - bx[n - 1]y[n - 1])
-//      y[n] = y[n - 1] + dt(gx[n - 1]y[n - 1] - cy[n - 1])
-lotkavolterra(L, a, b, c, g, dt, x_0, y_0) =    
-    prey_level(out * (x / L)) , 
-    pred_level(out * (y / L))
+lotkavolterra(L, a, b, c, g, dt, x_0, y_0) =    prey_level(out * (x / L)) , 
+                                                pred_level(out * (y / L))
     letrec {
         'x = fi.highpass(1, 10, tanh(L, (x_0 + x + dt * (a * x - b * x * y))));
         'y = fi.highpass(1, 10, tanh(L, (y_0 + y + dt * (g * x * y - c * y))));
@@ -87,4 +75,3 @@ out = global_group(hslider("[6]Output scaling[scale:exp]", 0, 0, 1, .000001)
     : smooth);
 
 process(x1, x2) = lotkavolterra(limit, a, b, c, g, dt, input(x1), input(x2));
-
